@@ -1,0 +1,73 @@
+<project name="core" default="build-all">
+    <description>
+        Ant build file for core
+    </description>
+    
+    <!-- set global properties for this build -->
+    <property name="src" location="src"/>
+    <property name="bin" location="bin"/>
+    <property name="dist"  location="."/>
+    <property name="classpath" location="libs"/>
+    
+    <target name="init">
+      <!-- Create the time stamp -->
+      <tstamp/>
+      <!-- Create the build directory structure used by compile -->
+      <mkdir dir="${bin}"/>
+    </target>
+    
+    <!-- Compile all of core -->
+    <target name="compile" description="compile the Java source code to class files">
+        <javac srcdir="${src}" destdir="${bin}" classpath="libs/lwjgl.jar;libs/lwjgl_util.jar;libs/slick-util.jar"/>
+    </target>    
+    
+    <!-- Clean up stuff -->
+    <target name="clean" description="remove intermediate files">
+        <delete dir="${bin}"/>
+        <delete file="core.jar"/>
+    </target>
+    
+    
+    <!-- Make the jars -->
+    <target name="jar-core" depends="compile" description="create a Jar file for the client">
+        <jar destfile="core.jar">
+            <fileset dir="bin" includes="engine/*/*.class engine/*.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="engine.Main"/>
+                <attribute name="Class-Path" value="libs/lwjgl.jar libs/lwjgl_util.jar libs/slick-util.jar"/>
+                <attribute name="Created-By" value="Strom"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <!-- Just build everything -->
+    <target name="build-all" depends="compile, jar-core" description="Build everything and make the .jar:s"/>
+    
+    <!-- Build from scratch -->
+	<target name="re" depends="clean, init, build-all" description="Clean up old stuff and the build everything."/>
+	
+	<!-- To run core you can use these tasks. -->
+	<target name="run-linux" description="Run core client">
+		<java jar="core.jar" fork="true">
+			<jvmarg value="-Djava.library.path=libs/native/linux"/>
+		</java>
+	</target>
+	
+	<target name="run-windows" description="Run core client">
+		<java jar="core.jar" fork="true">
+			<jvmarg value="-Djava.library.path=libs/native/windows"/>
+		</java>
+	</target>
+	
+	<target name="run-solaris" description="Run core client">
+		<java jar="core.jar" fork="true">
+			<jvmarg value="-Djava.library.path=libs/native/solaris"/>
+		</java>
+	</target>
+	
+	<target name="run-mac" description="Run core client">
+		<java jar="core.jar" fork="true">
+			<jvmarg value="-Djava.library.path=libs/native/macosx"/>
+		</java>
+	</target>
+</project>
